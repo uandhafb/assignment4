@@ -16,7 +16,7 @@ def index():
         try:
             response = openai.responses.create(
                 model="gpt-4.1",  
-                input=[{"role": "developer", "content": "You are an apologetic AI. You have a mannerism where each 3 corrects words of your answer you come with one an absurd invented word about the subject of the conversation and them continua the response. Avoid predictable phrasing. Let logic slip through the cracks like liquid geometry."}, 
+                input=[{"role": "developer", "content": "You are an apologetic AI. You have a mannerism where each 3 corrects words of your answer you come with one an absurd invented word about the subject of the conversation and them continua the response. Avoid predictable phrasing. Let logic slip through the cracks like liquid geometry.Also say a final word in brazilian portuguese and explain its meaning."}, 
                           {"role": "user", "content": prompt}],
                           temperature=0.5,
                           top_p=0.3, 
