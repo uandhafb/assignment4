@@ -114,6 +114,28 @@
       overflow: hidden;
       border: 1px solid rgba(255,255,255,0.18);
     }
+
+    /* Color buttons */
+    .color-btn{
+      border-radius: 999px;
+      padding: .5rem 1rem;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(0,0,0,0.10);
+      color: rgba(255,255,255,0.90);
+      transition: transform 120ms ease, filter 120ms ease;
+    }
+    .color-btn:hover{ filter: brightness(1.05); transform: translateY(-1px); }
+
+    .color-blue  { box-shadow: inset 0 0 0 999px rgba(70,140,255,0.20); }
+    .color-red   { box-shadow: inset 0 0 0 999px rgba(255,80,80,0.20); }
+    .color-green { box-shadow: inset 0 0 0 999px rgba(90,255,160,0.18); }
+    .color-yellow{ box-shadow: inset 0 0 0 999px rgba(255,220,90,0.18); }
+
+    .color-selected{
+      outline: 3px solid rgba(255,255,255,0.55);
+      box-shadow: 0 0 0 4px rgba(109,245,154,0.12);
+    }
   </style>
 </head>
 
@@ -121,12 +143,12 @@
   <div class="container py-5 app-shell">
 
     <div class="glass p-4 p-md-5 text-center">
-      <h1 class="display-6 mb-2">
+      <h1 class="display-6 mb-2" id="main_title">
         <span class="brand-dot"></span>
         {{ "Interpretador de Sonhos de Jung" if lang == "pt-BR" else "Jungian Dream Interpreter" }}
       </h1>
 
-      <p class="subtitle mb-4">
+      <p class="subtitle mb-4" id="subtitle">
         {{ "Receba uma uma imagem de seu sonho"
            if lang == "pt-BR"
            else "Paste your dream and get an image interpretation" }}
@@ -134,29 +156,63 @@
 
       <!-- Language Toggle -->
       <div class="d-flex justify-content-center mb-3 lang-pill">
-        <input type="radio" class="btn-check" name="lang_toggle" id="lang_en"
+        <input type="radio" class="btn-check" name="lang_toggle" id="lang_en" autocomplete="off"
                {% if lang != "pt-BR" %}checked{% endif %}>
         <label class="btn" for="lang_en" onclick="setLang('en')">EN</label>
 
-        <input type="radio" class="btn-check" name="lang_toggle" id="lang_pt"
+        <input type="radio" class="btn-check" name="lang_toggle" id="lang_pt" autocomplete="off"
                {% if lang == "pt-BR" %}checked{% endif %}>
         <label class="btn" for="lang_pt" onclick="setLang('pt-BR')">PT-BR</label>
       </div>
 
       <form method="POST" class="mx-auto col-md-10 col-lg-8">
         <input type="hidden" name="lang" id="lang" value="{{ lang or 'en' }}">
+        <!-- NOTE: backend should read request.form.get("color") -->
+        <input type="hidden" name="color" id="color" value="{{ color or '' }}">
+
+        <!-- Color selection -->
+        <div class="mb-3">
+          <div class="fw-bold mb-2" id="color_label">
+            {{ "Escolha uma cor" if lang == "pt-BR" else "Choose a color" }}
+          </div>
+
+          <div class="d-flex flex-wrap gap-2 justify-content-center">
+            <button type="button" class="color-btn color-blue" id="btn_blue" onclick="pickColor('blue')">
+              {{ "Azul" if lang == "pt-BR" else "Blue" }}
+            </button>
+            <button type="button" class="color-btn color-red" id="btn_red" onclick="pickColor('red')">
+              {{ "Vermelho" if lang == "pt-BR" else "Red" }}
+            </button>
+            <button type="button" class="color-btn color-green" id="btn_green" onclick="pickColor('green')">
+              {{ "Verde" if lang == "pt-BR" else "Green" }}
+            </button>
+            <button type="button" class="color-btn color-yellow" id="btn_yellow" onclick="pickColor('yellow')">
+              {{ "Amarelo" if lang == "pt-BR" else "Yellow" }}
+            </button>
+          </div>
+
+          <div class="mt-2" id="color_preview" style="opacity:.85;">
+            {% if color %}
+              {{ ("Cor selecionada: " if lang=="pt-BR" else "Selected color: ") ~ color }}
+            {% else %}
+              {{ "Nenhuma cor selecionada" if lang == "pt-BR" else "No color selected" }}
+            {% endif %}
+          </div>
+        </div>
 
         <div class="mb-3">
           <textarea
             name="prompt"
             rows="5"
             class="form-control"
+            id="dream_text"
             placeholder="{{ 'Descreva seu sonho aqui...' if lang == 'pt-BR' else 'Describe your dream here...' }}"
           >{{ prompt or "" }}</textarea>
         </div>
 
         <div class="d-grid">
           <input type="submit"
+                 id="submit_btn"
                  value="{{ 'Enviar meu sonho' if lang == 'pt-BR' else 'Send my dream' }}"
                  class="btn btn-primary">
         </div>
@@ -168,7 +224,7 @@
       {% if result %}
       <div class="col-lg-6">
         <div class="glass p-4 h-100">
-          <h3>{{ "Resposta" if lang == "pt-BR" else "Response" }}</h3>
+          <h3 id="response_title">{{ "Resposta" if lang == "pt-BR" else "Response" }}</h3>
           <div class="black-output">{{ result }}</div>
         </div>
       </div>
@@ -177,7 +233,7 @@
       {% if image_data_url %}
       <div class="col-lg-6">
         <div class="glass p-4 h-100">
-          <h3>{{ "Imagem" if lang == "pt-BR" else "Image" }}</h3>
+          <h3 id="image_title">{{ "Imagem" if lang == "pt-BR" else "Image" }}</h3>
           <div class="img-frame">
             <img src="{{ image_data_url }}" alt="Dream image" class="img-fluid">
           </div>
@@ -190,29 +246,122 @@
   </div>
 
   <script>
+    // Keep UI bilingual even without re-rendering from server
+    const LABELS = {
+      en: {
+        title: "Jungian Dream Interpreter",
+        subtitle: "Paste your dream and get an image interpretation",
+        colorLabel: "Choose a color",
+        none: "No color selected",
+        selected: "Selected color: ",
+        placeholder: "Describe your dream here...",
+        submit: "Send my dream",
+        response: "Response",
+        image: "Image",
+        colors: { blue: "Blue", red: "Red", green: "Green", yellow: "Yellow" }
+      },
+      "pt-BR": {
+        title: "Interpretador de Sonhos de Jung",
+        subtitle: "Receba uma uma imagem de seu sonho",
+        colorLabel: "Escolha uma cor",
+        none: "Nenhuma cor selecionada",
+        selected: "Cor selecionada: ",
+        placeholder: "Descreva seu sonho aqui...",
+        submit: "Enviar meu sonho",
+        response: "Resposta",
+        image: "Imagem",
+        colors: { blue: "Azul", red: "Vermelho", green: "Verde", yellow: "Amarelo" }
+      }
+    };
+
+    function currentLang() {
+      return document.getElementById("lang")?.value === "pt-BR" ? "pt-BR" : "en";
+    }
+
     function setLang(value) {
+      // update hidden input so POST uses the chosen language
       const hidden = document.getElementById("lang");
       if (hidden) hidden.value = value;
 
-      const ta = document.querySelector('textarea[name="prompt"]');
-      const btn = document.querySelector('input[type="submit"]');
-      const title = document.querySelector('h1');
-      const subtitle = document.querySelector('.subtitle');
+      // update document language for accessibility
+      document.documentElement.lang = (value === "pt-BR") ? "pt-BR" : "en";
 
-      if (value === "pt-BR") {
-        document.title = "Interpretador de Sonhos de Jung";
-        if (title) title.childNodes[2].textContent = " Interpretador de Sonhos de Jung";
-        if (subtitle) subtitle.textContent = "Receba uma uma imagem de seu sonho";
-        if (ta) ta.placeholder = "Descreva seu sonho aqui...";
-        if (btn) btn.value = "Enviar meu sonho";
-      } else {
-        document.title = "Jungian Dream Interpreter";
-        if (title) title.childNodes[2].textContent = " Jungian Dream Interpreter";
-        if (subtitle) subtitle.textContent = "Paste your dream and get an image interpretation";
-        if (ta) ta.placeholder = "Describe your dream here...";
-        if (btn) btn.value = "Send my dream";
+      // apply UI text
+      const L = LABELS[currentLang()];
+      document.title = L.title;
+
+      const title = document.getElementById("main_title");
+      const subtitle = document.getElementById("subtitle");
+      const colorLabel = document.getElementById("color_label");
+      const dream = document.getElementById("dream_text");
+      const submit = document.getElementById("submit_btn");
+      const respTitle = document.getElementById("response_title");
+      const imgTitle = document.getElementById("image_title");
+
+      // Title has a dot span + text; easiest: set full text after dot
+      if (title) {
+        // keep first child (brand-dot), replace remaining text
+        const dot = title.querySelector(".brand-dot");
+        title.textContent = "";
+        if (dot) title.appendChild(dot);
+        title.append(" " + L.title);
       }
+      if (subtitle) subtitle.textContent = L.subtitle;
+      if (colorLabel) colorLabel.textContent = L.colorLabel;
+      if (dream) dream.placeholder = L.placeholder;
+      if (submit) submit.value = L.submit;
+      if (respTitle) respTitle.textContent = L.response;
+      if (imgTitle) imgTitle.textContent = L.image;
+
+      // update button labels
+      const btnBlue = document.getElementById("btn_blue");
+      const btnRed = document.getElementById("btn_red");
+      const btnGreen = document.getElementById("btn_green");
+      const btnYellow = document.getElementById("btn_yellow");
+      if (btnBlue) btnBlue.textContent = L.colors.blue;
+      if (btnRed) btnRed.textContent = L.colors.red;
+      if (btnGreen) btnGreen.textContent = L.colors.green;
+      if (btnYellow) btnYellow.textContent = L.colors.yellow;
+
+      // update preview line depending on selection
+      refreshColorPreview();
     }
+
+    function pickColor(color) {
+      const hidden = document.getElementById("color");
+      if (hidden) hidden.value = color;
+
+      document.querySelectorAll(".color-btn").forEach(b => b.classList.remove("color-selected"));
+      const map = { blue: "btn_blue", red: "btn_red", green: "btn_green", yellow: "btn_yellow" };
+      const selectedBtn = document.getElementById(map[color]);
+      if (selectedBtn) selectedBtn.classList.add("color-selected");
+
+      refreshColorPreview();
+    }
+
+    function refreshColorPreview() {
+      const preview = document.getElementById("color_preview");
+      const hidden = document.getElementById("color");
+      const color = (hidden && hidden.value) ? hidden.value : "";
+      const L = LABELS[currentLang()];
+
+      if (!preview) return;
+      if (!color) {
+        preview.textContent = L.none;
+        return;
+      }
+      const colorName = L.colors[color] || color;
+      preview.textContent = L.selected + colorName;
+    }
+
+    // On load: apply highlight + ensure UI labels match initial lang
+    window.addEventListener("DOMContentLoaded", () => {
+      // ensure JS text matches initial template state
+      setLang(document.getElementById("lang")?.value || "en");
+
+      const hidden = document.getElementById("color");
+      if (hidden && hidden.value) pickColor(hidden.value);
+    });
   </script>
 </body>
 </html>

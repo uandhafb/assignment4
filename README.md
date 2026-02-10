@@ -26,3 +26,4 @@ python3 app.py
    - a Jungian-style textual interpretation (to be implemented)
    - a symbolic image inspired by the dream (to be implemented)
 4. Both outputs are displayed side by side in a visually framed layout.
+5. Color Interpretation - Mandala analysis
