@@ -3,377 +3,396 @@
 <html lang="{{ 'pt-BR' if lang == 'pt-BR' else 'en' }}">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ "Interpretador de Sonhos de Jung" if lang == "pt-BR" else "Jungian Dream Interpreter" }}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ "Interpretador de Sonhos de Jung" if lang == "pt-BR" else "Jungian Dream Interpreter" }}</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <style>
-        :root {
-            --bg1: #0b1220;
-            --bg2: #0f2a1e;
-            --card: rgba(255, 255, 255, 0.10);
-            --cardBorder: rgba(255, 255, 255, 0.18);
-            --text: rgba(255, 255, 255, 0.92);
-            --muted: rgba(255, 255, 255, 0.72);
-            --accent: #6df59a;
-            --accent2: #b66bff;
-        }
+  <style>
+    :root {
+      --bg1: #0b1220;
+      --bg2: #0f2a1e;
+      --card: rgba(255, 255, 255, 0.10);
+      --cardBorder: rgba(255, 255, 255, 0.18);
+      --text: rgba(255, 255, 255, 0.92);
+      --muted: rgba(255, 255, 255, 0.72);
+      --accent: #6df59a;
+      --accent2: #b66bff;
+    }
 
-        body {
-            font-family: "Space Grotesk", system-ui, sans-serif;
-            color: var(--text);
-            min-height: 100vh;
-            margin: 0;
-            background:
-                radial-gradient(1200px 700px at 20% 10%, rgba(182, 107, 255, 0.28), transparent 60%),
-                radial-gradient(900px 600px at 85% 30%, rgba(109, 245, 154, 0.22), transparent 55%),
-                linear-gradient(160deg, var(--bg1), var(--bg2));
-        }
+    body {
+      font-family: "Space Grotesk", system-ui, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(182, 107, 255, 0.28), transparent 60%),
+        radial-gradient(900px 600px at 85% 30%, rgba(109, 245, 154, 0.22), transparent 55%),
+        linear-gradient(160deg, var(--bg1), var(--bg2));
+    }
 
-        /* noise overlay */
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
-            mix-blend-mode: overlay;
-            opacity: .25;
-            z-index: -1;
-        }
+    /* noise overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity: .25;
+      z-index: -1;
+    }
 
-        /* ✅ background image layer (default OFF) */
-        body::after {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background: none;
-            opacity: 0;
-            z-index: -2;
-        }
+    /* ✅ background image layer (default OFF) */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: none;
+      opacity: 0;
+      z-index: -2;
+    }
 
-        /* ✅ only when image exists: enable bg image */
-        body.has-bg::after {
-            background-image: url("{{ image_data_url }}");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+    /* ✅ only when image 1 exists: enable bg image */
+    body.has-bg::after {
+      background-image: url("{{ image_data_url1 }}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0.22;
+      filter: blur(2px);
+      transform: scale(1.03);
+    }
 
-            opacity: 0.22;      /* adjust 0.10 - 0.35 */
-            filter: blur(2px);  /* adjust 0px - 6px */
-            transform: scale(1.03);
-        }
+    .app-shell {
+      max-width: 980px;
+      position: relative;
+      z-index: 1;
+    }
 
-        .app-shell {
-            max-width: 980px;
-            position: relative;
-            z-index: 1;
-        }
+    .glass {
+      background: var(--card);
+      border: 1px solid var(--cardBorder);
+      border-radius: 22px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 12px 45px rgba(0, 0, 0, 0.35);
+    }
 
-        .glass {
-            background: var(--card);
-            border: 1px solid var(--cardBorder);
-            border-radius: 22px;
-            backdrop-filter: blur(14px);
-            box-shadow: 0 12px 45px rgba(0, 0, 0, 0.35);
-        }
+    .brand-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      margin-right: 10px;
+    }
 
-        .brand-dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 999px;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            margin-right: 10px;
-        }
+    .subtitle {
+      color: var(--muted);
+      max-width: 52ch;
+      margin: 0 auto;
+    }
 
-        .subtitle {
-            color: var(--muted);
-            max-width: 52ch;
-            margin: 0 auto;
-        }
+    .lang-pill .btn {
+      border-radius: 999px;
+      padding: .35rem 1rem;
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: rgba(255, 255, 255, 0.86);
+      background: rgba(0, 0, 0, 0.12);
+    }
 
-        .lang-pill .btn {
-            border-radius: 999px;
-            padding: .35rem 1rem;
-            font-weight: 700;
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            color: rgba(255, 255, 255, 0.86);
-            background: rgba(0, 0, 0, 0.12);
-        }
+    textarea.form-control {
+      background: rgba(10, 14, 20, 0.55) !important;
+      color: var(--text) !important;
+      border: 1px solid rgba(255, 255, 255, 0.18) !important;
+      border-radius: 16px;
+      padding: 14px;
+    }
 
-        textarea.form-control {
-            background: rgba(10, 14, 20, 0.55) !important;
-            color: var(--text) !important;
-            border: 1px solid rgba(255, 255, 255, 0.18) !important;
-            border-radius: 16px;
-            padding: 14px;
-        }
+    .btn-primary {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #081012;
+    }
 
-        .btn-primary {
-            border: 0;
-            border-radius: 14px;
-            padding: 12px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            color: #081012;
-        }
+    .black-output {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.90);
+      padding: 1.1rem;
+      border-radius: 18px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      text-align: left;
+    }
 
-        .black-output {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.90);
-            padding: 1.1rem;
-            border-radius: 18px;
-            font-family: monospace;
-            white-space: pre-wrap;
-            text-align: left;
-        }
+    .img-frame {
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: box-shadow 0.5s ease;
+    }
 
-        .img-frame {
-            border-radius: 18px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: box-shadow 0.5s ease;
-        }
+    .glow-blue { box-shadow: 0 0 30px rgba(70, 140, 255, 0.4); }
+    .glow-red { box-shadow: 0 0 30px rgba(255, 80, 80, 0.4); }
+    .glow-green { box-shadow: 0 0 30px rgba(90, 255, 160, 0.4); }
+    .glow-yellow { box-shadow: 0 0 30px rgba(255, 220, 90, 0.4); }
+    .glow-default { box-shadow: 0 0 30px rgba(255, 255, 255, 0.2); }
 
-        /* Color-specific glow effects */
-        .glow-blue { box-shadow: 0 0 30px rgba(70, 140, 255, 0.4); }
-        .glow-red { box-shadow: 0 0 30px rgba(255, 80, 80, 0.4); }
-        .glow-green { box-shadow: 0 0 30px rgba(90, 255, 160, 0.4); }
-        .glow-yellow { box-shadow: 0 0 30px rgba(255, 220, 90, 0.4); }
-        .glow-default { box-shadow: 0 0 30px rgba(255, 255, 255, 0.2); }
+    .color-btn {
+      border-radius: 999px;
+      padding: .5rem 1rem;
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(0, 0, 0, 0.10);
+      color: rgba(255, 255, 255, 0.90);
+      transition: transform 120ms ease, filter 120ms ease;
+    }
 
-        .color-btn {
-            border-radius: 999px;
-            padding: .5rem 1rem;
-            font-weight: 700;
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            background: rgba(0, 0, 0, 0.10);
-            color: rgba(255, 255, 255, 0.90);
-            transition: transform 120ms ease, filter 120ms ease;
-        }
+    .color-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+    .color-blue { box-shadow: inset 0 0 0 999px rgba(70, 140, 255, 0.20); }
+    .color-red { box-shadow: inset 0 0 0 999px rgba(255, 80, 80, 0.20); }
+    .color-green { box-shadow: inset 0 0 0 999px rgba(90, 255, 160, 0.18); }
+    .color-yellow { box-shadow: inset 0 0 0 999px rgba(255, 220, 90, 0.18); }
 
-        .color-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
-        .color-blue { box-shadow: inset 0 0 0 999px rgba(70, 140, 255, 0.20); }
-        .color-red { box-shadow: inset 0 0 0 999px rgba(255, 80, 80, 0.20); }
-        .color-green { box-shadow: inset 0 0 0 999px rgba(90, 255, 160, 0.18); }
-        .color-yellow { box-shadow: inset 0 0 0 999px rgba(255, 220, 90, 0.18); }
-
-        .color-selected {
-            outline: 3px solid rgba(255, 255, 255, 0.55);
-            box-shadow: 0 0 0 4px rgba(109, 245, 154, 0.12);
-        }
-    </style>
+    .color-selected {
+      outline: 3px solid rgba(255, 255, 255, 0.55);
+      box-shadow: 0 0 0 4px rgba(109, 245, 154, 0.12);
+    }
+  </style>
 </head>
 
-<!-- ✅ IMPORTANT: only add class has-bg when image exists -->
-<body class="{% if image_data_url %}has-bg{% endif %}">
-    <div class="container py-5 app-shell">
+<body class="{% if image_data_url1 %}has-bg{% endif %}">
+  <div class="container py-5 app-shell">
 
-        <div class="glass p-4 p-md-5 text-center">
-            <h1 class="display-6 mb-2" id="main_title">
-                <span class="brand-dot"></span>
-                {{ "Interpretador de Sonhos de Jung" if lang == "pt-BR" else "Jungian Dream Interpreter" }}
-            </h1>
+    <div class="glass p-4 p-md-5 text-center">
+      <h1 class="display-6 mb-2" id="main_title">
+        <span class="brand-dot"></span>
+        {{ "Interpretador de Sonhos de Jung" if lang == "pt-BR" else "Jungian Dream Interpreter" }}
+      </h1>
 
-            <p class="subtitle mb-4" id="subtitle">
-                {{ "Receba uma imagem de seu sonho" if lang == "pt-BR" else "Paste your dream and get an image interpretation" }}
-            </p>
+      <p class="subtitle mb-4" id="subtitle">
+        {{ "Receba uma imagem de seu sonho" if lang == "pt-BR" else "Paste your dream and get an image interpretation" }}
+      </p>
 
-            <div class="d-flex justify-content-center mb-3 lang-pill">
-                <input type="radio" class="btn-check" name="lang_toggle" id="lang_en" autocomplete="off"
-                    {% if lang != "pt-BR" %}checked{% endif %}>
-                <label class="btn" for="lang_en" onclick="setLang('en')">EN</label>
+      <div class="d-flex justify-content-center mb-3 lang-pill">
+        <input type="radio" class="btn-check" name="lang_toggle" id="lang_en" autocomplete="off"
+          {% if lang != "pt-BR" %}checked{% endif %}>
+        <label class="btn" for="lang_en" onclick="setLang('en')">EN</label>
 
-                <input type="radio" class="btn-check" name="lang_toggle" id="lang_pt" autocomplete="off"
-                    {% if lang == "pt-BR" %}checked{% endif %}>
-                <label class="btn" for="lang_pt" onclick="setLang('pt-BR')">PT-BR</label>
-            </div>
+        <input type="radio" class="btn-check" name="lang_toggle" id="lang_pt" autocomplete="off"
+          {% if lang == "pt-BR" %}checked{% endif %}>
+        <label class="btn" for="lang_pt" onclick="setLang('pt-BR')">PT-BR</label>
+      </div>
 
-            <form method="POST" class="mx-auto col-md-10 col-lg-8">
-                <input type="hidden" name="lang" id="lang" value="{{ lang or 'en' }}">
-                <input type="hidden" name="color" id="color" value="{{ color or '' }}">
+      <form method="POST" class="mx-auto col-md-10 col-lg-8">
+        <input type="hidden" name="lang" id="lang" value="{{ lang or 'en' }}">
+        <input type="hidden" name="color" id="color" value="{{ color or '' }}">
 
-                <div class="mb-3">
-                    <div class="fw-bold mb-2" id="color_label">
-                        {{ "Escolha uma cor" if lang == "pt-BR" else "Choose a color" }}
-                    </div>
+        <div class="mb-3">
+          <div class="fw-bold mb-2" id="color_label">
+            {{ "Escolha uma cor" if lang == "pt-BR" else "Choose a color" }}
+          </div>
 
-                    <div class="d-flex flex-wrap gap-2 justify-content-center">
-                        <button type="button" class="color-btn color-blue" id="btn_blue" onclick="pickColor('blue')">
-                            {{ "Azul" if lang == "pt-BR" else "Blue" }}
-                        </button>
-                        <button type="button" class="color-btn color-red" id="btn_red" onclick="pickColor('red')">
-                            {{ "Vermelho" if lang == "pt-BR" else "Red" }}
-                        </button>
-                        <button type="button" class="color-btn color-green" id="btn_green" onclick="pickColor('green')">
-                            {{ "Verde" if lang == "pt-BR" else "Green" }}
-                        </button>
-                        <button type="button" class="color-btn color-yellow" id="btn_yellow" onclick="pickColor('yellow')">
-                            {{ "Amarelo" if lang == "pt-BR" else "Yellow" }}
-                        </button>
-                    </div>
+          <div class="d-flex flex-wrap gap-2 justify-content-center">
+            <button type="button" class="color-btn color-blue" id="btn_blue" onclick="pickColor('blue')">
+              {{ "Azul" if lang == "pt-BR" else "Blue" }}
+            </button>
+            <button type="button" class="color-btn color-red" id="btn_red" onclick="pickColor('red')">
+              {{ "Vermelho" if lang == "pt-BR" else "Red" }}
+            </button>
+            <button type="button" class="color-btn color-green" id="btn_green" onclick="pickColor('green')">
+              {{ "Verde" if lang == "pt-BR" else "Green" }}
+            </button>
+            <button type="button" class="color-btn color-yellow" id="btn_yellow" onclick="pickColor('yellow')">
+              {{ "Amarelo" if lang == "pt-BR" else "Yellow" }}
+            </button>
+          </div>
 
-                    <div class="mt-2" id="color_preview" style="opacity:.85;">
-                        {% if color %}
-                        {{ ("Cor selecionada: " if lang=="pt-BR" else "Selected color: ") ~ color }}
-                        {% else %}
-                        {{ "Nenhuma cor selecionada" if lang == "pt-BR" else "No color selected" }}
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <textarea name="prompt" rows="5" class="form-control" id="dream_text"
-                        placeholder="{{ 'Descreva seu sonho aqui...' if lang == 'pt-BR' else 'Describe your dream here...' }}">{{ prompt or "" }}</textarea>
-                </div>
-
-                <div class="d-grid">
-                    <input type="submit" id="submit_btn" value="{{ 'Enviar meu sonho' if lang == 'pt-BR' else 'Send my dream' }}"
-                        class="btn btn-primary">
-                </div>
-            </form>
+          <div class="mt-2" id="color_preview" style="opacity:.85;">
+            {% if color %}
+            {{ ("Cor selecionada: " if lang=="pt-BR" else "Selected color: ") ~ color }}
+            {% else %}
+            {{ "Nenhuma cor selecionada" if lang == "pt-BR" else "No color selected" }}
+            {% endif %}
+          </div>
         </div>
 
-        {% if result %}
-        <div class="row g-4 mt-4">
-            <div class="col-12">
-                <div class="glass p-4">
-                    <h3 id="response_title">
-                        {{ "Análise Junguiana" if lang == "pt-BR" else "Jungian Analysis" }}
-                    </h3>
-
-                    <div class="mb-2" style="opacity:.75;">
-                        {{ ("Cor: " if lang=="pt-BR" else "Color: ") ~ (color or ("nenhuma" if lang=="pt-BR" else "none")) }}
-                    </div>
-
-                    <div class="black-output mb-4">{{ result }}</div>
-
-                    {% if image_data_url %}
-                    <div class="text-center mt-3">
-                        <h4 class="mb-3" style="color: var(--accent);">
-                            {{ "Visualização do Inconsciente" if lang == "pt-BR" else "Visual Interpretation" }}
-                        </h4>
-                        <div class="img-frame mx-auto glow-{{ color if color else 'default' }}" style="max-width: 600px;">
-                            <img src="{{ image_data_url }}" class="img-fluid" alt="Jungian AI Visualization">
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
+        <div class="mb-3">
+          <textarea name="prompt" rows="5" class="form-control" id="dream_text"
+            placeholder="{{ 'Descreva seu sonho aqui...' if lang == 'pt-BR' else 'Describe your dream here...' }}">{{ prompt or "" }}</textarea>
         </div>
-        {% endif %}
 
+        <div class="d-grid">
+          <input type="submit" id="submit_btn"
+            value="{{ 'Enviar meu sonho' if lang == 'pt-BR' else 'Send my dream' }}"
+            class="btn btn-primary">
+        </div>
+      </form>
     </div>
 
-    <script>
-        const LABELS = {
-            en: {
-                title: "Jungian Dream Interpreter",
-                subtitle: "Paste your dream and get an image interpretation",
-                colorLabel: "Choose a color",
-                none: "No color selected",
-                selected: "Selected color: ",
-                placeholder: "Describe your dream here...",
-                submit: "Send my dream",
-                response: "Response",
-                image: "Image",
-                colors: { blue: "Blue", red: "Red", green: "Green", yellow: "Yellow" }
-            },
-            "pt-BR": {
-                title: "Interpretador de Sonhos de Jung",
-                subtitle: "Receba uma uma imagem de seu sonho",
-                colorLabel: "Escolha uma cor",
-                none: "Nenhuma cor selecionada",
-                selected: "Cor selecionada: ",
-                placeholder: "Descreva seu sonho aqui...",
-                submit: "Enviar meu sonho",
-                response: "Resposta",
-                image: "Imagem",
-                colors: { blue: "Azul", red: "Vermelho", green: "Verde", yellow: "Amarelo" }
-            }
-        };
+    {% if result %}
+    <div class="row g-4 mt-4">
+      <div class="col-12">
+        <div class="glass p-4">
+          
+          <!-- BLOCK 1: line1+line2 + image1 -->
+          {% if image_data_url1 %}
+          <div class="text-center mt-3">
+            <h4 class="mb-3" style="color: var(--accent);">
+              {{ "Visualização do Inconsciente" if lang == "pt-BR" else "Visual Interpretation" }}
+            </h4>
 
-        function currentLang() {
-            return document.getElementById("lang")?.value === "pt-BR" ? "pt-BR" : "en";
-        }
+            {% if line1 or line2 %}
+            <div class="black-output mb-3" style="max-width: 820px; margin: 0 auto;">
+              {% if line1 %}{{ line1 }}{% endif %}
+              {% if line2 %}<br>{{ line2 }}{% endif %}
+            </div>
+            {% endif %}
 
-        function setLang(value) {
-            const hidden = document.getElementById("lang");
-            if (hidden) hidden.value = value;
-            document.documentElement.lang = (value === "pt-BR") ? "pt-BR" : "en";
+            <div class="img-frame mx-auto glow-{{ color if color else 'default' }}" style="max-width: 600px;">
+              <img src="{{ image_data_url1 }}" class="img-fluid" alt="Image 1">
+            </div>
+          </div>
+          {% endif %}
 
-            const L = LABELS[currentLang()];
-            document.title = L.title;
+          <!-- BLOCK 2: jung_text (line3+) + image2 -->
+          {% if image_data_url2 %}
+          <div class="text-center mt-4">
+            <h4 class="mb-3" style="color: var(--accent2);">
+              {{ "Interpretação Junguiana" if lang == "pt-BR" else "Jung Interpretation" }}
+            </h4>
 
-            const title = document.getElementById("main_title");
-            const subtitle = document.getElementById("subtitle");
-            const colorLabel = document.getElementById("color_label");
-            const dream = document.getElementById("dream_text");
-            const submit = document.getElementById("submit_btn");
+            {% if jung_text %}
+            <div class="black-output mb-3" style="max-width: 820px; margin: 0 auto;">
+              {{ jung_text }}
+            </div>
+            {% endif %}
 
-            if (title) {
-                const dot = title.querySelector(".brand-dot");
-                title.textContent = "";
-                if (dot) title.appendChild(dot);
-                title.append(" " + L.title);
-            }
-            if (subtitle) subtitle.textContent = L.subtitle;
-            if (colorLabel) colorLabel.textContent = L.colorLabel;
-            if (dream) dream.placeholder = L.placeholder;
-            if (submit) submit.value = L.submit;
+            <div class="img-frame mx-auto glow-{{ color if color else 'default' }}" style="max-width: 600px;">
+              <img src="{{ image_data_url2 }}" class="img-fluid" alt="Image 2">
+            </div>
+          </div>
+          {% endif %}
 
-            const btnBlue = document.getElementById("btn_blue");
-            const btnRed = document.getElementById("btn_red");
-            const btnGreen = document.getElementById("btn_green");
-            const btnYellow = document.getElementById("btn_yellow");
-            if (btnBlue) btnBlue.textContent = L.colors.blue;
-            if (btnRed) btnRed.textContent = L.colors.red;
-            if (btnGreen) btnGreen.textContent = L.colors.green;
-            if (btnYellow) btnYellow.textContent = L.colors.yellow;
+        </div>
+      </div>
+    </div>
+    {% endif %}
 
-            refreshColorPreview();
-        }
+  </div>
 
-        function pickColor(color) {
-            const hidden = document.getElementById("color");
-            if (hidden) hidden.value = color;
+  <script>
+    const LABELS = {
+      en: {
+        title: "Jungian Dream Interpreter",
+        subtitle: "Paste your dream and get an image interpretation",
+        colorLabel: "Choose a color",
+        none: "No color selected",
+        selected: "Selected color: ",
+        placeholder: "Describe your dream here...",
+        submit: "Send my dream",
+        response: "Response",
+        image: "Image",
+        colors: { blue: "Blue", red: "Red", green: "Green", yellow: "Yellow" }
+      },
+      "pt-BR": {
+        title: "Interpretador de Sonhos de Jung",
+        subtitle: "Receba uma uma imagem de seu sonho",
+        colorLabel: "Escolha uma cor",
+        none: "Nenhuma cor selecionada",
+        selected: "Cor selecionada: ",
+        placeholder: "Descreva seu sonho aqui...",
+        submit: "Enviar meu sonho",
+        response: "Resposta",
+        image: "Imagem",
+        colors: { blue: "Azul", red: "Vermelho", green: "Verde", yellow: "Amarelo" }
+      }
+    };
 
-            document.querySelectorAll(".color-btn").forEach(b => b.classList.remove("color-selected"));
-            const map = { blue: "btn_blue", red: "btn_red", green: "btn_green", yellow: "btn_yellow" };
-            const selectedBtn = document.getElementById(map[color]);
-            if (selectedBtn) selectedBtn.classList.add("color-selected");
+    function currentLang() {
+      return document.getElementById("lang")?.value === "pt-BR" ? "pt-BR" : "en";
+    }
 
-            refreshColorPreview();
-        }
+    function setLang(value) {
+      const hidden = document.getElementById("lang");
+      if (hidden) hidden.value = value;
+      document.documentElement.lang = (value === "pt-BR") ? "pt-BR" : "en";
 
-        function refreshColorPreview() {
-            const preview = document.getElementById("color_preview");
-            const hidden = document.getElementById("color");
-            const color = (hidden && hidden.value) ? hidden.value : "";
-            const L = LABELS[currentLang()];
+      const L = LABELS[currentLang()];
+      document.title = L.title;
 
-            if (!preview) return;
-            if (!color) {
-                preview.textContent = L.none;
-                return;
-            }
-            const colorName = L.colors[color] || color;
-            preview.textContent = L.selected + colorName;
-        }
+      const title = document.getElementById("main_title");
+      const subtitle = document.getElementById("subtitle");
+      const colorLabel = document.getElementById("color_label");
+      const dream = document.getElementById("dream_text");
+      const submit = document.getElementById("submit_btn");
 
-        window.addEventListener("DOMContentLoaded", () => {
-            setLang(document.getElementById("lang")?.value || "en");
-            const hidden = document.getElementById("color");
-            if (hidden && hidden.value) pickColor(hidden.value);
-        });
-    </script>
+      if (title) {
+        const dot = title.querySelector(".brand-dot");
+        title.textContent = "";
+        if (dot) title.appendChild(dot);
+        title.append(" " + L.title);
+      }
+      if (subtitle) subtitle.textContent = L.subtitle;
+      if (colorLabel) colorLabel.textContent = L.colorLabel;
+      if (dream) dream.placeholder = L.placeholder;
+      if (submit) submit.value = L.submit;
+
+      const btnBlue = document.getElementById("btn_blue");
+      const btnRed = document.getElementById("btn_red");
+      const btnGreen = document.getElementById("btn_green");
+      const btnYellow = document.getElementById("btn_yellow");
+      if (btnBlue) btnBlue.textContent = L.colors.blue;
+      if (btnRed) btnRed.textContent = L.colors.red;
+      if (btnGreen) btnGreen.textContent = L.colors.green;
+      if (btnYellow) btnYellow.textContent = L.colors.yellow;
+
+      refreshColorPreview();
+    }
+
+    function pickColor(color) {
+      const hidden = document.getElementById("color");
+      if (hidden) hidden.value = color;
+
+      document.querySelectorAll(".color-btn").forEach(b => b.classList.remove("color-selected"));
+      const map = { blue: "btn_blue", red: "btn_red", green: "btn_green", yellow: "btn_yellow" };
+      const selectedBtn = document.getElementById(map[color]);
+      if (selectedBtn) selectedBtn.classList.add("color-selected");
+
+      refreshColorPreview();
+    }
+
+    function refreshColorPreview() {
+      const preview = document.getElementById("color_preview");
+      const hidden = document.getElementById("color");
+      const color = (hidden && hidden.value) ? hidden.value : "";
+      const L = LABELS[currentLang()];
+
+      if (!preview) return;
+      if (!color) {
+        preview.textContent = L.none;
+        return;
+      }
+      const colorName = L.colors[color] || color;
+      preview.textContent = L.selected + colorName;
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      setLang(document.getElementById("lang")?.value || "en");
+      const hidden = document.getElementById("color");
+      if (hidden && hidden.value) pickColor(hidden.value);
+    });
+  </script>
 </body>
+
 </html>
