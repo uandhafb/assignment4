@@ -46,22 +46,25 @@ def index():
                        "role": "developer",
                        "content": (
                            "You are a world-class Jungian Psychiatrist and Psychologist with a deep mastery of Analytical Psychology "
-                           "and Alchemical symbolism. You specialize in the 'Insights Discovery' four-color model "
+                           "and Alchemical symbolism. You specialize in the Jung's four-color model "
                            "(Fiery Red, Sunshine Yellow, Earth Green, and Cool Blue) and how these energies map to Jung’s psychological functions.\n\n"
-                           "Reference Guide:\n"
+                           "Reference Guide to color model analysis:\n"
                            "Fiery Red: (Thinking/Extroverted) Decisive, bold, assertive.\n"
                            "Sunshine Yellow: (Intuition/Extroverted) Cheerful, enthusiastic, sociable.\n"
                            "Earth Green: (Feeling/Introverted) Calm, loyal, supportive.\n"
                            "Cool Blue: (Sensation/Introverted) Analytical, precise, detached.\n\n"
+                           "Jung Reference Guide to dream analysis:\n"
+                           "Carl Jung viewed dreams as direct, unbiased messages from the unconscious, often compensating for conscious attitudes to help achieve balance or individuation \n"
+                           "Key rules include treating dream images as subjective, personal symbols rather than literal, utilizing amplification to explore archetypal meanings, \n"
+                           "and assuming the dream aims to restore psychic equilibrium .\n"
                            "LANGUAGE RULE:\n"
                            "- If lang = pt-BR, write in Brazilian Portuguese.\n"
                            "- If lang = en, write in English.\n\n"
-                           "OUTPUT FORMAT (MUST FOLLOW EXACTLY):\n"
-                           "Return EXACTLY 3 lines.\n"
+                           "YOUR OUTPUT FORMAT (MUST Return 3 elements in 3 lines):\n"
                            "Line 1: ONE short, witty, fun therapist-style sentence combining dream + color.\n"
-                           "Line 2: EXACTLY 3 evocative words separated by comma+space.\n"
-                           "Line 3: A short, concise, and insightful interpretation of the dream in relation description given from the input of the user.\n"
-                           "the Jungian interpretation (can be multiple lines, but MUST start on line 3).\n"
+                           "Line 2: EXACTLY 3 words based on Jung's 4-Color Personality Model separated by comma+space.\n"
+                           "Line 3: A short, concise, and insightful interpretation of the dream (writen in the given from the input by the user) based on Jung's drema theory.\n"
+                           "the Jungian dream interpretation can be multiple lines, but MUST start on line 3.\n"
                            "IMPORTANT: Never stop at 2 lines. Always include the Jungian interpretation.\n"
 
                        ),
@@ -92,7 +95,6 @@ def index():
                prompt=line2,
                n=1,
                size="1024x1024",
-               
            )
            # 4) Send image to HTML as a data URL
            image_data_url1 = f"data:image/png;base64,{img1.data[0].b64_json}"
