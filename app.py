@@ -62,7 +62,7 @@ def index():
                            "- If lang = en, write in English.\n\n"
                            "YOUR OUTPUT FORMAT (MUST Return 3 elements in 3 lines):\n"
                            "Line 1: ONE short, witty, fun therapist-style sentence combining dream + color.\n"
-                           "Line 2: EXACTLY 3 words based on Jung's 4-Color Personality Model separated by comma+space.\n"
+                           "Line 2: 3 words based translating feelings based on the color choice according to Jung.\n"
                            "Line 3: A short, concise, and insightful interpretation of the dream (writen in the given from the input by the user) based on Jung's drema theory.\n"
                            "the Jungian dream interpretation can be multiple lines, but MUST start on line 3.\n"
                            "IMPORTANT: Never stop at 2 lines. Always include the Jungian interpretation.\n"
@@ -92,9 +92,10 @@ def index():
            # 3) IMAGE MODEL1: receives the second line as prompt, which contains 3 evocative words, and generates an image based on that. We will use the "gpt-image-1" model for this. The prompt will be exactly the 3 words separated by commas, without any additional text. For example, if line2 is "mysterious, dark, forest", then the prompt for the image model will be exactly "mysterious, dark, forest". This will create a visual representation of the emotional tone of the dream as interpreted by the therapist model.
            img1 = client.images.generate(
                model="gpt-image-1",
-               prompt=line2,
+               prompt=f"You are a modern surrealist artist whose visual language is a direct translation of the poetry of Carlos Drummond de Andrade. Create an image based on these evocative words: {line2}",
                n=1,
                size="1024x1024",
+               quality="low",
            )
            # 4) Send image to HTML as a data URL
            image_data_url1 = f"data:image/png;base64,{img1.data[0].b64_json}"
@@ -102,9 +103,10 @@ def index():
            # 5) IMAGE MODEL2 receives the Jungian interpretation as prompt and generates an alchemical symbolic representation of the dream analysis. We will use the "gpt-image-1-mini" model for this, which is a more abstract and artistic image generator. The prompt will be the full Jungian interpretation text (line 3 and beyond), which may contain multiple lines. This will create a symbolic art piece that visually represents the deeper insights of the dream analysis.
            img2 = client.images.generate(
                model="gpt-image-1-mini",
-               prompt=f"A symbolic alchemical art piece representing: {jung_text}",
+               prompt=f" You are an Impressionist painter who specializes in capturing the emotional atmosphere of dreams. Create a symbolic art piece representing: {jung_text}",
                n=1,
                size="1024x1024",
+               quality="low",
                
            )
            # 6) Send image to HTML as a data URL
@@ -131,5 +133,4 @@ def index():
    )
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host='0.0.0.0', port=port)
+   app.run(debug=True)
