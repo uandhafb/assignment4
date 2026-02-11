@@ -47,26 +47,62 @@
       z-index: -1;
     }
 
-    /* ✅ background image layer (default OFF) */
     body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background: none;
-      opacity: 0;
-      z-index: -2;
+     content: "";
+     position: fixed;
+     inset: 0;
+     pointer-events: none;
+     background: none;
+     opacity: 0;
+    z-index: -2;
     }
 
-    /* ✅ only when image 1 exists: enable bg image */
+    /* SINGLE IMAGE MODE */
     body.has-bg::after {
-      background-image: url("{{ image_data_url1 }}");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      opacity: 0.22;
-      filter: blur(2px);
-      transform: scale(1.03);
+        background-image: url("{{ image_data_url1 }}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        filter: blur(2px);
+        transform: scale(1.03);
+        animation: fadeA 10s infinite;
+        opacity: 0.22;
+    }
+
+    /* DUAL IMAGE MODE */
+    body.has-bg-dual::before {
+     background-image: url("{{ image_data_url1 }}");
+     background-size: cover;
+     background-position: center;
+     background-repeat: no-repeat;
+     filter: blur(2px);
+     transform: scale(1.03);
+     animation: fadeA 20s infinite;
+     opacity: 0.15;
+     }
+
+    body.has-bg-dual::after {
+     background-image: url("{{ image_data_url2 }}");
+     background-size: cover;
+     background-position: center;
+     background-repeat: no-repeat;
+     filter: blur(2px);
+     transform: scale(1.03);
+     animation: fadeB 30s infinite;
+     opacity: 0.15;
+    }
+
+    /* animation timing */
+    @keyframes fadeA {
+     0%, 45% { opacity: 0.10; }
+     50%, 95% { opacity: 0.; }
+     100% { opacity: 0.15; }
+   }
+
+     @keyframes fadeB {
+     0%, 45% { opacity: 0; }
+     50%, 95% { opacity: 0.17; }
+     100% { opacity: 0; }
     }
 
     .app-shell {
@@ -171,7 +207,12 @@
   </style>
 </head>
 
-<body class="{% if image_data_url1 %}has-bg{% endif %}">
+<body class="
+{% if image_data_url1 and image_data_url2 %}has-bg-dual
+{% elif image_data_url1 %}has-bg
+{% endif %}
+">
+
   <div class="container py-5 app-shell">
 
     <div class="glass p-4 p-md-5 text-center">
