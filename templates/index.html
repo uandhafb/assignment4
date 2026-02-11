@@ -331,14 +331,13 @@
          {% if image_data_url1 %}
          <div class="text-center mt-3">
            <h4 class="mb-3" style="color: var(--accent);">
-             {{ "Visualização do Inconsciente" if lang == "pt-BR" else "Visual Interpretation" }}
+             {{ "Cores segundo Jung" if lang == "pt-BR" else "Jung's Colors" }}
            </h4>
 
 
            {% if line1 or line2 %}
            <div class="black-output mb-3" style="max-width: 820px; margin: 0 auto;">
              {% if line1 %}{{ line1 }}{% endif %}
-             {% if line2 %}<br>{{ line2 }}{% endif %}
            </div>
            {% endif %}
 
@@ -366,16 +365,8 @@
          {% if image_data_url2 %}
          <div class="text-center mt-4">
            <h4 class="mb-3" style="color: var(--accent2);">
-             {{ "Interpretação Junguiana" if lang == "pt-BR" else "Jung Interpretation" }}
+             {{ "Interpretação Junguiana" if lang == "pt-BR" else "Jung's Interpretation" }}
            </h4>
-
-
-           {% if jung_text %}
-           <div class="black-output mb-3" style="max-width: 820px; margin: 0 auto;">
-             {{ jung_text }}
-           </div>
-           {% endif %}
-
 
            <div class="img-frame mx-auto glow-{{ color if color else 'default' }}" style="max-width: 600px;">
              <img src="{{ image_data_url2 }}" class="img-fluid" alt="Image 2">
